@@ -59,12 +59,13 @@ int promntUserForId() //Get id from user
 const char* getPath() 
 {
 	cin.ignore(numeric_limits<streamsize>::max(), '\n');//Ignore any junk left from getting the id.
+	string var;
+    //getline(cin, var);
 	string path;//file path
 	cout << "User please input your file here: ";//Promnt line
 	char pieceOfPath = cin.get();
 	while (pieceOfPath != '\n') 
 	{
-     	pieceOfPath = cin.get();
 		switch (pieceOfPath) //Checks for characters that need to be escaped and adds it properly to the string
 		{
 			case '\\':
@@ -79,21 +80,35 @@ const char* getPath()
 				 path += '\'';
 				 break;
 
+			case '\n':
+				break;
+
+			case '\t':
+				break;
+
+			case '\r':
+				break;
+
 			default:
 				path += pieceOfPath;
 				break;
 		}
+     	pieceOfPath = cin.get();
 	}//Get path from user
-	return path.c_str();
+	const char* cPath = path.c_str();
+	return cPath;
 }
 
 void openFile(fstream& in) //Gets file from user 
 {
-	in.open(getPath(), ios::in | ios::out);
+	const char* p = getPath();
+	in.open(p, ios::in | ios::out);
 	if (!in) 
 	{
+		string var;
 		in.clear();
 		in.ignore(numeric_limits<streamsize>::max(), '\n');
+		cin >> var;
 		openFile(in);
 		return;
 	}

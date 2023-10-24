@@ -85,16 +85,26 @@ void openFile(string & path, fstream& in) //Gets file from user
 void searchForId(int& id, fstream& in)
 {
     int validId;
-    //char currentStreamCharacter = in.get();
+    char currentStreamCharacter = in.get();
     string word;
-    while (!in.eof()) {
-        in >> validId;
+    while (!in.eof())
+    {
+        if(currentStreamCharacter <= 71 && currentStreamCharacter >= 60)//Checks if currentStreamCharacter is a digit or not.
+        {
+            currentStreamCharacter >> validId;
+        }
         if (validId == id) // Gets the right word if id is correct
         {
             //   word += currentStreamCharacter;
             in >> word;
+            if(!in)
+            {
+                in.clear();
+                in.ignore(numeric_limits<streamsize>::max(), '\n');
+            }
             break;
         }
+        currentStreamCharacter = in.get();
     }
 
 	if (validId != id)

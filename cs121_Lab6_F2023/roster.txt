@@ -6,3 +6,5 @@ porky
 666	WALT
 
 10000     Trey
+99     Davis
+999     Jordan

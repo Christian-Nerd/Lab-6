@@ -34,10 +34,22 @@ void searchForId(int &id, fstream &in);
 int main() 
 {
 	int id = promntUserForId();//It's the file name.
+	char choice = 'y';// This is the choice for if the user wants to continue.
     string path = getPath();
     fstream file;//File header
 	openFile(path, file); // Gets file name & opens file
-	searchForId(id, file);
+	while (tolower(choice) == 'y') // Regulates possible user choices
+	{
+		searchForId(id, file);
+		cin >> choice;
+		tolower(choice);
+		if (choice != 'y' || choice != 'n' || !cin || cin.peek() != '\n') // If user inputs invalid choice...
+		{
+			cerr << "Invalid input please input either y or n." << endl << endl;
+			in.clear();
+			in.ignore(numeric_limits<streamsize>::max(), '\n');
+		}
+	}
 	return 0; // Runs without errors
 }
 
@@ -85,14 +97,16 @@ void openFile(string & path, fstream& in) //Gets file from user
 void searchForId(int& id, fstream& in)
 {
     int validId;
-    char currentStreamCharacter = in.get();
-    string word;
+  //  char currentStreamCharacter = in.get();
+	string word, dummy;
+
     while (!in.eof())
     {
-        if(currentStreamCharacter <= 71 && currentStreamCharacter >= 60)//Checks if currentStreamCharacter is a digit or not.
-        {
-            currentStreamCharacter >> validId;
-        }
+		
+		in >> validId;
+		bool n = !in;
+		if (!in)
+			in.clear();
         if (validId == id) // Gets the right word if id is correct
         {
             //   word += currentStreamCharacter;
@@ -104,7 +118,8 @@ void searchForId(int& id, fstream& in)
             }
             break;
         }
-        currentStreamCharacter = in.get();
+		in >> dummy;
+      //  currentStreamCharacter = in.get();
     }
 
 	if (validId != id)

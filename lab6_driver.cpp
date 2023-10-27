@@ -20,7 +20,6 @@
 #include<fstream> //For file input and output
 #include<iostream> //For basic input and output
 #include<iomanip> //For basic io manipulators like ios::fixed & ios::setw
-#define white_space  currentStreamCharacter == '\b' ||currentStreamCharacter == '\n' || currentStreamCharacter == '\r' || currentStreamCharacter == '\t' || currentStreamCharacter == '\"' || currentStreamCharacter == '\'' || currentStreamCharacter == ',' || currentStreamCharacter == ';' || currentStreamCharacter == '.' || currentStreamCharacter == ';' || currentStreamCharacter == ':' || currentStreamCharacter == '?' || currentStreamCharacter == '!' || currentStreamCharacter == '(' || currentStreamCharacter == ')' || currentStreamCharacter == '{' || currentStreamCharacter == '}'
 using namespace std;
 int promntUserForId();
 const string getPath();
@@ -34,22 +33,11 @@ void searchForId(int &id, fstream &in);
 int main() 
 {
 	int id = promntUserForId();//It's the file name.
-	char choice = 'y';// This is the choice for if the user wants to continue.
     string path = getPath();
     fstream file;//File header
 	openFile(path, file); // Gets file name & opens file
-	while (tolower(choice) == 'y') // Regulates possible user choices
-	{
-		searchForId(id, file);
-		cin >> choice;
-		tolower(choice);
-		if (choice != 'y' || choice != 'n' || !cin || cin.peek() != '\n') // If user inputs invalid choice...
-		{
-			cerr << "Invalid input please input either y or n." << endl << endl;
-			in.clear();
-			in.ignore(numeric_limits<streamsize>::max(), '\n');
-		}
-	}
+    searchForId(id, file);
+    file.close();
 	return 0; // Runs without errors
 }
 
@@ -62,10 +50,10 @@ int promntUserForId() //Get id from user
 	{
 		cin.clear();
 		cin.ignore(numeric_limits<streamsize>::max(), '\n');
-		cerr << "\n\nInvalid input please input integer id";
+		cerr << "Invalid input please input integer id\n\n";
 		return promntUserForId(); //Promnt user for input again
 	}
-	cout << "\n\n Thanks!  ";
+	cout << " \n\nThanks! ";
 	return id;
 }
 
@@ -97,41 +85,66 @@ void openFile(string & path, fstream& in) //Gets file from user
 void searchForId(int& id, fstream& in)
 {
     int validId;
-  //  char currentStreamCharacter = in.get();
-	string word, dummy;
-
-    while (!in.eof())
+    //  char currentStreamCharacter = in.get();
+    string word, dummy;
+    char choice = 'y';// This is the choice for if the user wants to continue.
+    while (tolower(choice) == 'y') // Regulates possible user choices
     {
-		
-		in >> validId;
-		bool n = !in;
-		if (!in)
-			in.clear();
-        if (validId == id) // Gets the right word if id is correct
+        while (!in.eof())
         {
-            //   word += currentStreamCharacter;
-            in >> word;
-            if(!in)
+            in >> validId;
+            bool n = !in;
+            if (!in)
+                in.clear();
+            if (validId == id) // Gets the right word if id is correct
             {
+                //   word += currentStreamCharacter;
+                in >> word;
+                if (!in) {
+                    in.clear();
+                    in.ignore(numeric_limits<streamsize>::max(), '\n');
+                }
+                break;
+            }
+            in >> dummy;
+            //  currentStreamCharacter = in.get();
+        }
+
+        if (validId != id)
+        {
+            cout << "ID doesn't exist, so what's the the name? : ";
+            cin >> word;
+            in.clear();
+            in << '\n';
+            in << id;
+            in << "     " + word;
+        }
+        else
+            cout << "The word " + word + " was assigned to this id " + to_string(id) + ".";
+        bool choosing = true;//Represents the time when someone is choosing y or n.
+        while(choosing)
+        {
+            cout << "\n\nDo you want to continue searching (y/n)?";
+            cin >> choice;
+            tolower(choice);
+            if (choice != 'y' && choice != 'n' || !cin || cin.peek() != '\n') // If user inputs invalid choice...
+            {
+                cerr << "Invalid input please input either y or n." << endl << endl;
                 in.clear();
                 in.ignore(numeric_limits<streamsize>::max(), '\n');
             }
-            break;
+            else if(choice == 'y')
+            {
+                choosing = false;
+            }
+
+            else if(choice == 'n')
+            {
+                return;
+            }
         }
-		in >> dummy;
-      //  currentStreamCharacter = in.get();
+        in.clear();
+        in.seekg(ios::beg);
+        id = promntUserForId();
     }
-
-	if (validId != id)
-	{
-		cout << "ID doesn't exist, so what's the the name? : ";
-		cin >> word;
-		in.clear();
-		in << '\n';
-        in << id;
-        in << "     " + word;
-	}
-	else
-		cout << "The word " + word + " was assigned to this id " + to_string(id) + ".";
 }
-
